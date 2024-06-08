@@ -29,7 +29,9 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { ReactNode, useState } from "react";
 import { EventsPutRequest } from "@/app/api/events/route";
 import { toast } from "sonner";
-import { useSWRConfig } from "swr";
+import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
+import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
+import { apiAction } from "@/lib/api";
 
 const AddEvent = () => {
   const [open, setOpen] = useState(false);
@@ -129,7 +131,9 @@ function Form({
   const [repeat, setRepeat] = useState(false);
   const [repeatDays, setRepeatDays] = useState([today.getDay()]);
   const [loading, setLoading] = useState(false);
-  const { mutate: globalMutate } = useSWRConfig();
+
+  const invalidateEvents = useInvalidateEvents();
+  const invalidateMonthOverview = useInvalidateMonthOverview();
 
   return (
     <form
@@ -144,19 +148,17 @@ function Form({
           startDate: toDateString(startDate, "day"),
           repeat,
         };
-        const jwt = localStorage.getItem("jwt") ?? "";
-        const response = await fetch(`/api/events/`, {
-          body: JSON.stringify(body),
-          headers: { Authorization: `Bearer ${jwt}` },
+        const ok = await apiAction({
+          route: "/api/events",
           method: "PUT",
+          body,
         });
         const taskMessage = repeat ? "tasks" : "task";
-        if (response.ok) {
+        if (ok) {
           toast.success(`Successfully created ${taskMessage}: ${name}`);
           onSuccess();
-          // TODO: this logic is wrong, what if I'm affected by the end month in a series
-          globalMutate(`/api/events/month/${toDateString(startDate, "month")}`);
-          globalMutate(`/api/events/day/${toDateString(new Date(), "day")}`);
+          invalidateEvents();
+          invalidateMonthOverview();
         } else {
           toast.error(`Failed to create ${taskMessage}: ${name}`);
         }

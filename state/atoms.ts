@@ -6,7 +6,17 @@ export const authState = atom<boolean | undefined>({
   default: undefined,
 });
 
-export const monthState = atom<MonthOverview>({
+type MonthState = {
+  month: Date;
+  overview: MonthOverview;
+};
+
+export const monthState = atom<MonthState>({
   key: "monthState",
-  default: {},
+  default: {
+    month: new Date(),
+    overview: {},
+  },
 });
+
+// export const dayState = atom<

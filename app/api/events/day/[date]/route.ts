@@ -4,6 +4,12 @@ import { authenticatedRequest } from "@/app/crypto";
 
 export const runtime = "edge";
 
+export type Task = {
+  complete: boolean;
+  name: string;
+  uid: string;
+};
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { date: string } } // YYYY-MM-DD expected

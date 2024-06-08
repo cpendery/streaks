@@ -33,6 +33,16 @@ const config = {
           foreground: "hsl(var(--success-foreground))",
           accent: "hsl(var(--success-accent))",
         },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          accent: "hsl(var(--info-accent))",
+        },
+        error: {
+          DEFAULT: "hsl(var(--error))",
+          foreground: "hsl(var(--error-foreground))",
+          accent: "hsl(var(--error-accent))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

@@ -8,15 +8,17 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState } from "@/state/atoms";
-import { useApi } from "@/hooks/useApi";
-import { toDateString } from "@/lib/utils";
 import { Calendar as Cal } from "@/components/ui/calendar";
-import { MonthOverview } from "@/app/api/events/month/[date]/route";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSWRConfig } from "swr";
 import { AddEvent } from "@/components/add-event";
 import { Trash2 } from "lucide-react";
+import { useMonthOverview } from "@/hooks/api/useMonthOverview";
+import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
+import { useEvents } from "@/hooks/api/useEvents";
+import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
+import { apiAction } from "@/lib/api";
+import { Task } from "@/app/api/events/day/[date]/route";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -64,10 +66,17 @@ function Calendar({
   date: Date;
   setDate: (date: Date) => void;
 }) {
-  const overview = useApi<MonthOverview>(
-    `/api/events/month/${toDateString(date, "month")}`,
-    { suspense: true }
-  ).data as MonthOverview;
+  const [month, setMonth] = useState(new Date());
+  const invalidateMonthOverview = useInvalidateMonthOverview();
+  const { data: monthOverview } = useMonthOverview(month);
+  const overview = monthOverview ?? {};
+  const onMonthChange = useCallback(
+    (month: Date) => {
+      setMonth(month);
+      invalidateMonthOverview(month);
+    },
+    [invalidateMonthOverview]
+  );
 
   const today = new Date();
   const todayString = today.toDateString();
@@ -109,6 +118,8 @@ function Calendar({
         mode="single"
         selected={date}
         onSelect={setDate as any} // ignore the undefined since its set as required
+        month={month}
+        onMonthChange={onMonthChange}
         modifiers={{
           complete: completeDays,
           completeToday: completeToday,
@@ -131,20 +142,10 @@ function Calendar({
   );
 }
 
-type Task = {
-  complete: boolean;
-  name: string;
-  uid: string;
-};
-
 function TodoList({ date }: { date: Date }) {
-  const { data: todoData, mutate } = useApi<Task[]>(
-    `/api/events/day/${toDateString(date, "day")}`,
-    {
-      suspense: true,
-    }
-  );
-  const { mutate: globalMutate } = useSWRConfig();
+  const { data: todoData } = useEvents(date);
+  const invalidateMonthOverview = useInvalidateMonthOverview();
+  const invalidateEvents = useInvalidateEvents();
   const [todos, setTodos] = useState<Task[]>([]);
   useEffect(() => {
     if (todoData) setTodos(todoData);
@@ -157,16 +158,14 @@ function TodoList({ date }: { date: Date }) {
           t.uid != todo.uid ? t : { ...t, complete: !t.complete }
         ),
       ]);
-      const jwt = localStorage.getItem("jwt") ?? "";
-      await fetch(`/api/events/check/${todo.uid}`, {
-        body: JSON.stringify({ complete: !todo.complete }),
-        headers: { Authorization: `Bearer ${jwt}` },
+      await apiAction({
+        route: `/api/events/check/${todo.uid}`,
         method: "POST",
+        body: { complete: !todo.complete },
       });
-      mutate();
-      globalMutate(`/api/events/month/${toDateString(date, "month")}`);
+      invalidateMonthOverview(date);
     },
-    [date, globalMutate, mutate, todos]
+    [date, invalidateMonthOverview, todos]
   );
 
   return (
@@ -190,18 +189,16 @@ function TodoList({ date }: { date: Date }) {
               size="icon"
               onClick={async () => {
                 setTodos([...todos.filter((t) => t.uid != todo.uid)]);
-                const jwt = localStorage.getItem("jwt") ?? "";
-                const response = await fetch(`/api/events/${todo.uid}`, {
-                  headers: { Authorization: `Bearer ${jwt}` },
+                const ok = await apiAction({
+                  route: `/api/events/${todo.uid}`,
                   method: "DELETE",
                 });
-                if (response.ok) {
+                if (ok) {
                   toast.success(`Successfully deleted event: ${todo.name}`);
-                  globalMutate(
-                    `/api/events/month/${toDateString(date, "month")}`
-                  );
+                  invalidateMonthOverview(date);
                 } else {
                   toast.error(`Failed to delete: ${todo.name}`);
+                  invalidateEvents(date);
                 }
               }}
             >
