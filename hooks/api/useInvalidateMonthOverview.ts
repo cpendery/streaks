@@ -8,9 +8,10 @@ export const useInvalidateMonthOverview = () => {
     (month?: Date) => {
       queryClient.invalidateQueries({
         predicate: (query) =>
-          query.queryKey[0] === "/api/events/month" && month != null
+          query.queryKey[0] === "/api/events/month" &&
+          (month != null
             ? query.queryKey[1] == toDateString(month, "month")
-            : true,
+            : true),
       });
     },
     [queryClient]

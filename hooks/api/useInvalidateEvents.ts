@@ -8,9 +8,8 @@ export const useInvalidateEvents = () => {
     (day?: Date) => {
       queryClient.invalidateQueries({
         predicate: (query) =>
-          query.queryKey[0] === "/api/events/day" && day != null
-            ? query.queryKey[1] == toDateString(day, "day")
-            : true,
+          query.queryKey[0] === "/api/events/day" &&
+          (day != null ? query.queryKey[1] == toDateString(day, "day") : true),
       });
     },
     [queryClient]
