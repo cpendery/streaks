@@ -78,39 +78,46 @@ function Calendar({
     [invalidateMonthOverview]
   );
 
-  const today = new Date();
-  const todayString = today.toDateString();
+  const t = new Date();
+  const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  const dateString = date.toDateString();
 
-  const todaySelected = date.toDateString() == todayString;
-  const todayOverview = overview[`${today.getDate()}`];
   const selectedOverview = overview[`${date.getDate()}`];
-  const todayComplete =
-    todayOverview != null && todayOverview.complete === todayOverview.total;
   const selectedComplete =
     selectedOverview != null &&
     selectedOverview.complete === selectedOverview.total;
+  const selectedIncomplete =
+    selectedOverview != null &&
+    selectedOverview.complete !== selectedOverview.total;
 
-  const completeToday = !todaySelected && todayComplete ? [today] : [];
-  const completeTodaySelected = todaySelected && todayComplete ? [today] : [];
-  const completeSelected = !todaySelected && selectedComplete ? [date] : [];
-  const completeDays = (
-    date != null
-      ? Object.keys(overview)
-          .filter(
-            (day) =>
-              overview[day]?.complete === overview[day]?.total &&
-              overview[day] != null
-          )
-          .map(
-            (day) =>
-              new Date(date.getFullYear(), date.getMonth(), parseInt(day))
-          )
-      : []
-  ).filter(
-    (day) =>
-      day.toDateString() != todayString &&
-      day.toDateString() != date.toDateString()
+  const completeSelected = selectedComplete ? [date] : [];
+  const completeDays = Object.keys(overview)
+    .filter(
+      (day) =>
+        overview[day]?.complete === overview[day]?.total &&
+        overview[day] != null
+    )
+    .map((day) => new Date(date.getFullYear(), date.getMonth(), parseInt(day)))
+    .filter((day) => day.toDateString() != dateString);
+
+  console.log(completeDays, date);
+
+  const incompleteDays = Object.keys(overview)
+    .filter(
+      (day) =>
+        overview[day]?.complete !== overview[day]?.total &&
+        overview[day] != null
+    )
+    .map((day) => new Date(date.getFullYear(), date.getMonth(), parseInt(day)));
+
+  const failedDays = incompleteDays.filter(
+    (day) => day < today && day.toDateString() != dateString
   );
+  const failedSelected = selectedIncomplete && date < today ? [date] : [];
+  const upcomingDays = incompleteDays.filter(
+    (day) => day > today && day.toDateString() != dateString
+  );
+  const upcomingSelected = selectedIncomplete && date > today ? [date] : [];
 
   return (
     <div>
@@ -122,19 +129,25 @@ function Calendar({
         onMonthChange={onMonthChange}
         modifiers={{
           complete: completeDays,
-          completeToday: completeToday,
-          completeTodaySelected: completeTodaySelected,
           completeSelected: completeSelected,
+          upcoming: upcomingDays,
+          upcomingSelected: upcomingSelected,
+          failed: failedDays,
+          failedSelected: failedSelected,
         }}
         modifiersClassNames={{
           complete:
             "bg-success text-success-foreground hover:bg-success-accent hover:text-success-foreground font-extrabold",
-          completeToday:
-            "bg-success text-success-foreground hover:bg-success-accent hover:text-success-foreground underline underline-offset-2 font-extrabold",
           completeSelected:
             "font-extrabold bg-success-foreground hover:bg-success-foreground focus:bg-success-foreground",
-          completeTodaySelected:
-            "font-extrabold bg-success-foreground hover:bg-success-foreground focus:bg-success-foreground underline underline-offset-2",
+          upcoming:
+            "bg-info text-info-foreground hover:bg-info-accent hover:text-info-foreground font-extrabold",
+          upcomingSelected:
+            "font-extrabold text-background bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
+          failed:
+            "bg-error text-error-foreground hover:bg-error-accent hover:text-error-foreground font-extrabold",
+          failedSelected:
+            "font-extrabold text-background bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
         }}
         required
       />
@@ -212,7 +225,10 @@ function TodoList({ date }: { date: Date }) {
 }
 
 function Day() {
-  const [date, setDate] = useState<Date>(new Date());
+  const t = new Date();
+  const [date, setDate] = useState<Date>(
+    new Date(t.getFullYear(), t.getMonth(), t.getDate())
+  );
 
   return (
     <div className="flex flex w-full mt-4 flex-col sm:flex-row">
