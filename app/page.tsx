@@ -336,9 +336,9 @@ export default function Home() {
             alt={"a cute fox holding a present pixel"}
             width={1024}
             height={1024}
-            style={{ width: "auto", height: "100%" }}
+            style={{ width: "auto" }}
           />
-          <div className="mb-16">
+          <div className="mb-16 text-center">
             gift under construction, updates forthcoming
           </div>
         </div>
