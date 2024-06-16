@@ -17,17 +17,22 @@ import { useMonthOverview } from "@/hooks/api/useMonthOverview";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { useEvents } from "@/hooks/api/useEvents";
 import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
-import { apiAction } from "@/lib/api";
+import { apiAction, apiMutation } from "@/lib/api";
 import { Task } from "@/app/api/events/day/[date]/route";
+import { Loader2 } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { DatePicker } from "@/components/ui/date-picker";
 
 function Login() {
   const [password, setPassword] = useState("");
   const setAuth = useSetRecoilState(authState);
-  const login = useCallback(() => {
-    fetch("/api/user/login", {
-      method: "POST",
-      body: JSON.stringify({ password }),
-    }).then(async (response) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (password: string) => {
+      const response = await apiMutation({
+        route: "/api/user/login",
+        method: "POST",
+        body: { password },
+      });
       if (!response.ok) {
         toast.error("failed to login");
       } else {
@@ -36,25 +41,31 @@ function Login() {
         toast.success("successfully logged in");
         setAuth(true);
       }
-    });
-  }, [password, setAuth]);
+    },
+  });
 
   return (
     <form
-      className="flex"
+      className="flex h-full items-center justify-center"
       onSubmit={(e) => {
         e.preventDefault();
-        login();
+        mutate(password);
       }}
     >
-      <Input
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        type="password"
-      />{" "}
-      <Button className="ml-4" type="submit">
-        Login
-      </Button>
+      <div className="flex sm:w-fit w-full justify-center sm:min-w-[50%] mx-4">
+        <Input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+        />{" "}
+        <Button className="ml-4" type="submit">
+          {isPending ? (
+            <Loader2 className="h-4 w-4 mx-2 animate-spin" />
+          ) : (
+            "Login"
+          )}
+        </Button>
+      </div>
     </form>
   );
 }
@@ -121,36 +132,69 @@ function Calendar({
 
   return (
     <div>
-      <Cal
-        mode="single"
-        selected={date}
-        onSelect={setDate as any} // ignore the undefined since its set as required
-        month={month}
-        onMonthChange={onMonthChange}
-        modifiers={{
-          complete: completeDays,
-          completeSelected: completeSelected,
-          upcoming: upcomingDays,
-          upcomingSelected: upcomingSelected,
-          failed: failedDays,
-          failedSelected: failedSelected,
-        }}
-        modifiersClassNames={{
-          complete:
-            "bg-success text-success-foreground hover:bg-success-accent hover:text-success-foreground font-extrabold",
-          completeSelected:
-            "font-extrabold bg-success-foreground hover:bg-success-foreground focus:bg-success-foreground",
-          upcoming:
-            "bg-info text-info-foreground hover:bg-info-accent hover:text-info-foreground font-extrabold",
-          upcomingSelected:
-            "font-extrabold text-background bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
-          failed:
-            "bg-error text-error-foreground hover:bg-error-accent hover:text-error-foreground font-extrabold",
-          failedSelected:
-            "font-extrabold text-background bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
-        }}
-        required
-      />
+      <div className="hidden sm:block">
+        <Cal
+          mode="single"
+          selected={date}
+          onSelect={setDate as any} // ignore the undefined since its set as required
+          month={month}
+          onMonthChange={onMonthChange}
+          modifiers={{
+            complete: completeDays,
+            completeSelected: completeSelected,
+            upcoming: upcomingDays,
+            upcomingSelected: upcomingSelected,
+            failed: failedDays,
+            failedSelected: failedSelected,
+          }}
+          modifiersClassNames={{
+            complete:
+              "bg-success text-success-foreground hover:bg-success-accent hover:text-success-foreground font-extrabold",
+            completeSelected:
+              "font-extrabold bg-success-foreground hover:bg-success-foreground focus:bg-success-foreground",
+            upcoming:
+              "bg-info text-info-foreground hover:bg-info-accent hover:text-info-foreground font-extrabold",
+            upcomingSelected:
+              "font-extrabold text-background bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
+            failed:
+              "bg-error text-error-foreground hover:bg-error-accent hover:text-error-foreground font-extrabold",
+            failedSelected:
+              "font-extrabold text-background bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
+          }}
+          required
+        />
+      </div>
+      <div className="[&>button]:w-full sm:hidden">
+        <DatePicker
+          label="Select day"
+          date={date}
+          setDate={setDate}
+          month={month}
+          onMonthChange={onMonthChange}
+          modifiers={{
+            complete: completeDays,
+            completeSelected: completeSelected,
+            upcoming: upcomingDays,
+            upcomingSelected: upcomingSelected,
+            failed: failedDays,
+            failedSelected: failedSelected,
+          }}
+          modifiersClassNames={{
+            complete:
+              "bg-success text-success-foreground hover:bg-success-accent hover:text-success-foreground font-extrabold",
+            completeSelected:
+              "font-extrabold bg-success-foreground hover:bg-success-foreground focus:bg-success-foreground",
+            upcoming:
+              "bg-info text-info-foreground hover:bg-info-accent hover:text-info-foreground font-extrabold",
+            upcomingSelected:
+              "font-extrabold text-background bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
+            failed:
+              "bg-error text-error-foreground hover:bg-error-accent hover:text-error-foreground font-extrabold",
+            failedSelected:
+              "font-extrabold text-background bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -238,7 +282,15 @@ function Day() {
           <Calendar date={date} setDate={setDate} />
         </Suspense>
       </div>
-      <Suspense fallback={<div className="grow"></div>}>
+      <Suspense
+        fallback={
+          <div className="h-full w-full space-y-2 mt-12 overflow-hidden sm:max-h-[calc(100vh-48px-16px)] max-h-[calc(100vh-132px-48px-16px)]">
+            {[...new Array(100)].map((_, idx) => (
+              <Skeleton key={idx} className="h-12 w-full block" />
+            ))}
+          </div>
+        }
+      >
         <div className="flex flex-col grow m-4">
           <div className="flex justify-end m-4"></div>
           <TodoList date={date} />
@@ -255,7 +307,13 @@ export default function Home() {
   return (
     <main className="flex justify-center min-h-screen">
       <div className="w-full">
-        {authenticated === false ? <Login /> : <Day />}
+        {authenticated === false && <Login />}
+        {authenticated === true && <Day />}
+        {authenticated == null && (
+          <div className="w-full h-full flex items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin" />
+          </div>
+        )}
       </div>
       <Toaster />
     </main>

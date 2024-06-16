@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { apiAction } from "@/lib/api";
+import { useTags } from "@/hooks/api/useTags";
 
 const AddEvent = () => {
   const [open, setOpen] = useState(false);
@@ -134,6 +135,8 @@ function Form({
 
   const invalidateEvents = useInvalidateEvents();
   const invalidateMonthOverview = useInvalidateMonthOverview();
+
+  const allTags = useTags();
 
   return (
     <form

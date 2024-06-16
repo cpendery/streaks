@@ -28,3 +28,8 @@ CREATE TABLE IF NOT EXISTS event_tags (
 	event_id INTEGER,
     tag_id INTEGER
 );
+
+INSERT INTO tags (name) VALUES ('tag 1');
+INSERT INTO tags (name) VALUES ('tag 2');
+INSERT INTO event_tags (event_id, tag_id) VALUES (1, 1);
+INSERT INTO event_tags (event_id, tag_id) VALUES (1, 2);
