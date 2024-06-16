@@ -88,3 +88,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+main {
+  background-color: #ff8daf;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: larger;
+}
+
+.cursor-friend {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  opacity: 1;
+  animation: cursor-friend-animation 2s ease-in forwards;
+}
+@keyframes cursor-friend-animation {
+  from {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(200px) scale(0);
+  }
+}

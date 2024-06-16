@@ -22,6 +22,7 @@ import { Task } from "@/app/api/events/day/[date]/route";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
+import Image from "next/image";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -301,20 +302,51 @@ function Day() {
 }
 
 export default function Home() {
-  useAuth();
-  const authenticated = useRecoilValue(authState);
+  // useAuth();
+  // const authenticated = useRecoilValue(authState);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", (e) => {
+      const elem = document.createElement("img");
+      elem.className = "cursor-friend";
+      elem.style.top = `${e.clientY}px`;
+      elem.style.left = `${e.clientX}px`;
+      elem.src = "/friend.png";
+      elem.height = 512;
+      elem.width = 512;
+      const cursorFriends = document.getElementById("cursor-friends");
+      cursorFriends?.appendChild(elem);
+      setTimeout(() => cursorFriends?.removeChild(elem), 2_500);
+    });
+  });
 
   return (
     <main className="flex justify-center min-h-screen">
-      <div className="w-full">
-        {authenticated === false && <Login />}
+      <div className="w-full min-h-screen">
+        {/* {authenticated === false && <Login />}
         {authenticated === true && <Day />}
         {authenticated == null && (
           <div className="w-full h-full flex items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin" />
           </div>
-        )}
+        )} */}
+        <div className="w-full h-full flex flex-col justify-center items-center relative">
+          <Image
+            src={`/pending.jpg`}
+            alt={"a cute fox holding a present pixel"}
+            width={1024}
+            height={1024}
+            style={{ width: "auto", height: "100%" }}
+          />
+          <div className="mb-16">
+            gift under construction, updates forthcoming
+          </div>
+        </div>
       </div>
+      <div
+        id="cursor-friends"
+        className="overflow-hidden h-screen w-screen absolute"
+      />
       <Toaster />
     </main>
   );
