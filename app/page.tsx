@@ -10,19 +10,14 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState } from "@/state/atoms";
 import { Calendar as Cal } from "@/components/ui/calendar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Checkbox } from "@/components/ui/checkbox";
 import { AddEvent } from "@/components/add-event";
-import { Trash2 } from "lucide-react";
 import { useMonthOverview } from "@/hooks/api/useMonthOverview";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
-import { useEvents } from "@/hooks/api/useEvents";
-import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
-import { apiAction, apiMutation } from "@/lib/api";
-import { Task } from "@/app/api/events/day/[date]/route";
+import { apiMutation } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
-import Image from "next/image";
+import { TodoList } from "@/components/todo-list";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -133,7 +128,7 @@ function Calendar({
 
   return (
     <div>
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         <Cal
           mode="single"
           selected={date}
@@ -165,7 +160,7 @@ function Calendar({
           required
         />
       </div>
-      <div className="[&>button]:w-full sm:hidden">
+      <div className="[&>button]:w-full md:hidden">
         <DatePicker
           label="Select day"
           date={date}
@@ -200,75 +195,6 @@ function Calendar({
   );
 }
 
-function TodoList({ date }: { date: Date }) {
-  const { data: todoData } = useEvents(date);
-  const invalidateMonthOverview = useInvalidateMonthOverview();
-  const invalidateEvents = useInvalidateEvents();
-  const [todos, setTodos] = useState<Task[]>([]);
-  useEffect(() => {
-    if (todoData) setTodos(todoData);
-  }, [todoData]);
-
-  const onCheck = useCallback(
-    async (todo: Task) => {
-      setTodos([
-        ...todos.map((t) =>
-          t.uid != todo.uid ? t : { ...t, complete: !t.complete }
-        ),
-      ]);
-      await apiAction({
-        route: `/api/events/check/${todo.uid}`,
-        method: "POST",
-        body: { complete: !todo.complete },
-      });
-      invalidateMonthOverview(date);
-    },
-    [date, invalidateMonthOverview, todos]
-  );
-
-  return (
-    <div className="flex grow flex-col space-y-2 mx-4">
-      {(todos ?? []).map((todo) => (
-        <div
-          key={todo.uid}
-          className="flex min-h-12 rounded border items-center justify-between"
-        >
-          <div className="flex items-center ml-2">
-            <Checkbox
-              className="ml-2"
-              checked={todo.complete}
-              onClick={async () => await onCheck(todo)}
-            />
-            <span className="ml-2">{todo.name}</span>
-          </div>
-          <div className="mr-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={async () => {
-                setTodos([...todos.filter((t) => t.uid != todo.uid)]);
-                const ok = await apiAction({
-                  route: `/api/events/${todo.uid}`,
-                  method: "DELETE",
-                });
-                if (ok) {
-                  toast.success(`Successfully deleted event: ${todo.name}`);
-                  invalidateMonthOverview(date);
-                } else {
-                  toast.error(`Failed to delete: ${todo.name}`);
-                  invalidateEvents(date);
-                }
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function Day() {
   const t = new Date();
   const [date, setDate] = useState<Date>(
@@ -276,7 +202,7 @@ function Day() {
   );
 
   return (
-    <div className="flex flex w-full mt-4 flex-col sm:flex-row">
+    <div className="flex flex w-full mt-4 flex-col md:flex-row">
       <div className="flex flex-col space-y-4 m-4">
         <AddEvent />
         <Suspense fallback={<Skeleton className="h-[360px] w-[360px]" />}>
@@ -285,7 +211,7 @@ function Day() {
       </div>
       <Suspense
         fallback={
-          <div className="h-full w-full space-y-2 mt-12 overflow-hidden sm:max-h-[calc(100vh-48px-16px)] max-h-[calc(100vh-132px-48px-16px)]">
+          <div className="h-full w-full space-y-2 mt-12 overflow-hidden md:max-h-[calc(100vh-48px-16px)] max-h-[calc(100vh-132px-48px-16px)]">
             {[...new Array(100)].map((_, idx) => (
               <Skeleton key={idx} className="h-12 w-full block" />
             ))}
@@ -302,8 +228,8 @@ function Day() {
 }
 
 export default function Home() {
-  // useAuth();
-  // const authenticated = useRecoilValue(authState);
+  useAuth();
+  const authenticated = useRecoilValue(authState);
 
   useEffect(() => {
     window.addEventListener("mousemove", (e) => {
@@ -323,29 +249,17 @@ export default function Home() {
   return (
     <main className="flex justify-center min-h-screen">
       <div className="w-full min-h-screen">
-        {/* {authenticated === false && <Login />}
+        {authenticated === false && <Login />}
         {authenticated === true && <Day />}
         {authenticated == null && (
           <div className="w-full h-full flex items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin" />
           </div>
-        )} */}
-        <div className="w-full h-full flex flex-col justify-center items-center relative">
-          <Image
-            src={`/pending.jpg`}
-            alt={"a cute fox holding a present pixel"}
-            width={1024}
-            height={1024}
-            style={{ width: "auto" }}
-          />
-          <div className="mb-16 text-center">
-            gift under construction, updates forthcoming
-          </div>
-        </div>
+        )}
       </div>
       <div
         id="cursor-friends"
-        className="overflow-hidden h-screen w-screen absolute"
+        className="overflow-hidden h-screen w-screen absolute pointer-events-none"
       />
       <Toaster />
     </main>

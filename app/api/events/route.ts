@@ -10,6 +10,7 @@ export type EventsPutRequest = {
   repeat: boolean;
   endDate?: string;
   repeatDays?: number[];
+  tags: string[];
 };
 
 const addDays = (date: Date, days: number) => {
@@ -22,8 +23,24 @@ export async function PUT(request: NextRequest) {
   if (!(await authenticatedRequest(request))) {
     return new Response(undefined, { status: 401 });
   }
-  const { startDate, endDate, repeatDays, name, repeat }: EventsPutRequest =
-    await request.json();
+  const {
+    startDate,
+    endDate,
+    repeatDays,
+    name,
+    repeat,
+    tags,
+  }: EventsPutRequest = await request.json();
+
+  const { results: existingTags } = await getRequestContext()
+    .env.DB.prepare(
+      `SELECT * FROM tags as t WHERE t.name IN (${tags
+        .map((_, idx) => `?${idx + 1}`)
+        .join(", ")})`
+    )
+    .bind(...tags)
+    .all();
+  const tagIds = existingTags.map((row) => row.id);
 
   const eventDates = [];
   const startEpochDate = new Date(startDate).getTime();
@@ -39,23 +56,45 @@ export async function PUT(request: NextRequest) {
   }
 
   const seriesId = crypto.randomUUID();
+  let eventIds: string[] = [];
   if (repeat && eventDates.length != 0) {
-    await getRequestContext().env.DB.batch(
+    const batchResults = await getRequestContext().env.DB.batch(
       eventDates.map((date) =>
         getRequestContext()
           .env.DB.prepare(
-            "INSERT INTO events (uid, sid, name, complete, date) VALUES (?1, ?2, ?3, 0, ?4);"
+            "INSERT INTO events (uid, sid, name, complete, date) VALUES (?1, ?2, ?3, 0, ?4) RETURNING id;"
           )
           .bind(crypto.randomUUID(), seriesId, name, date.getTime())
       )
     );
+    eventIds = batchResults // @ts-ignore
+      .map((tx) => tx.results.map((row) => row.id))
+      .flat();
   } else if (!repeat) {
-    await getRequestContext()
+    const results = await getRequestContext()
       .env.DB.prepare(
-        "INSERT INTO events (uid, sid, name, complete, date) VALUES (?1, ?2, ?3, 0, ?4);"
+        "INSERT INTO events (uid, sid, name, complete, date) VALUES (?1, ?2, ?3, 0, ?4) RETURNING id;"
       )
       .bind(crypto.randomUUID(), seriesId, name, startEpochDate)
       .run();
+    // @ts-ignore
+    eventIds = results.results.map((row) => row.id);
+  }
+
+  if (tagIds.length != 0) {
+    await getRequestContext().env.DB.batch(
+      tagIds
+        .map((tagId) =>
+          eventIds.map((eventId) =>
+            getRequestContext()
+              .env.DB.prepare(
+                "INSERT INTO event_tags (event_id, tag_id) VALUES (?1, ?2);"
+              )
+              .bind(eventId, tagId)
+          )
+        )
+        .flat()
+    );
   }
 
   return new Response();

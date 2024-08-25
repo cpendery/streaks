@@ -6,6 +6,7 @@ export const runtime = "edge";
 
 export type Task = {
   complete: boolean;
+  tags: string[];
   name: string;
   uid: string;
 };
@@ -22,16 +23,32 @@ export async function GET(
   const epochTime = new Date(date).getTime();
 
   const { results } = await getRequestContext()
-    .env.DB.prepare("SELECT * FROM events AS e WHERE e.date = ?1;")
+    .env.DB.prepare(
+      `SELECT e.*, t.name as tag_name FROM events as e 
+       LEFT JOIN event_tags as et ON e.id = et.event_id 
+       LEFT JOIN tags as t ON et.tag_id = t.id
+       WHERE e.date = ?1;`
+    )
     .bind(epochTime)
     .all();
 
-  const response = results.map((row) => ({
-    uid: row.uid,
-    name: row.name,
-    complete: !!row.complete,
-    date: new Date(row.date as number).toISOString(),
-  }));
+  const responseMap = results.reduce((acc, row) => {
+    if (acc.has(row.uid)) {
+      const item = acc.get(row.uid);
+      acc.set(row.uid, { ...item, tags: [...item.tags, row.tag_name] });
+    } else {
+      acc.set(row.uid, {
+        uid: row.uid,
+        name: row.name,
+        complete: !!row.complete,
+        date: new Date(row.date as number).toISOString(),
+        tags: row.tag_name != null ? [row.tag_name] : [],
+      });
+    }
+    return acc;
+  }, new Map());
+
+  const response = Array.from(responseMap.values());
 
   return new Response(JSON.stringify(response));
 }

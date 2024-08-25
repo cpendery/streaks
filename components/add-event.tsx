@@ -32,7 +32,7 @@ import { toast } from "sonner";
 import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { apiAction } from "@/lib/api";
-import { useTags } from "@/hooks/api/useTags";
+import { Badge } from "@/components/ui/badge";
 
 const AddEvent = () => {
   const [open, setOpen] = useState(false);
@@ -132,11 +132,11 @@ function Form({
   const [repeat, setRepeat] = useState(false);
   const [repeatDays, setRepeatDays] = useState([today.getDay()]);
   const [loading, setLoading] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tag, setTag] = useState("");
 
   const invalidateEvents = useInvalidateEvents();
   const invalidateMonthOverview = useInvalidateMonthOverview();
-
-  const allTags = useTags();
 
   return (
     <form
@@ -150,6 +150,7 @@ function Form({
           endDate: toDateString(endDate, "day"),
           startDate: toDateString(startDate, "day"),
           repeat,
+          tags,
         };
         const ok = await apiAction({
           route: "/api/events",
@@ -194,6 +195,49 @@ function Form({
           label={repeat ? "Start date" : "Date"}
         />
       </div>
+      <div className="grid gap-2">
+        <Label htmlFor="tag">Tags</Label>
+        {tags.length != 0 && (
+          <div className="flex my-1">
+            {tags.map((tag, idx) => (
+              <Badge
+                variant="secondary"
+                className="mr-1"
+                key={idx}
+                onClick={() =>
+                  setTags([...tags.slice(0, idx), ...tags.slice(idx + 1)])
+                }
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+        <Input
+          id="tag"
+          type="text"
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
+          onKeyDown={async (e) => {
+            if (e.key == "Enter") {
+              e.preventDefault();
+              setTag("");
+              if (!tags.includes(tag)) {
+                setTags([...tags, tag]);
+                const ok = await apiAction({
+                  route: `/api/events/tag`,
+                  method: "PUT",
+                  body: { name: tag },
+                });
+                if (!ok) {
+                  toast.error(`Failed to create tag: ${tag}`);
+                  setTags((tags) => tags.filter((t) => t != tag));
+                }
+              }
+            }
+          }}
+        />
+      </div>
 
       {repeat && (
         <>
@@ -206,20 +250,6 @@ function Form({
               label="End date"
             />
           </div>
-          {/* <div className="flex items-center space-x-2">
-            <Label htmlFor="repeat-schedule">Repeat every </Label>
-            <Input
-              className="w-16"
-              id="repeat-schedule"
-              type="number"
-              min={1}
-              value={repeatSchedule}
-              onChange={(e) => setRepeatSchedule(e.target.value)}
-            />
-            <Label htmlFor="repeat-schedule">
-              {parseInt(repeatSchedule) > 1 ? "weeks" : "week"}
-            </Label>
-          </div> */}
           <div className="flex items-center space-x-2">
             <Label htmlFor="repeat-days">Repeats on</Label>
             <div id="repeat-days" className="flex space-x-2">
