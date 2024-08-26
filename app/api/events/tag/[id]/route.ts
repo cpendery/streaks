@@ -19,9 +19,9 @@ export async function GET(
 
   const { results: existingTags } = await getRequestContext()
     .env.DB.prepare(
-      `SELECT t.name FROM events as e 
-        LEFT JOIN event_tags as et ON e.id = et.event_id 
-        INNER JOIN tags as t ON et.tag_id = t.id
+      `SELECT t.name FROM events AS e 
+        LEFT JOIN event_tags AS et ON e.id = et.event_id 
+        INNER JOIN tags AS t ON et.tag_id = t.id
         WHERE e.uid = ?1`
     )
     .bind(id)
@@ -43,9 +43,9 @@ export async function PUT(
 
   const { results: existingTags } = await getRequestContext()
     .env.DB.prepare(
-      `SELECT t.name FROM events as e 
-        LEFT JOIN event_tags as et ON e.id = et.event_id 
-        INNER JOIN tags as t ON et.tag_id = t.id
+      `SELECT t.name FROM events AS e 
+        LEFT JOIN event_tags AS et ON e.id = et.event_id 
+        INNER JOIN tags AS t ON et.tag_id = t.id
         WHERE e.uid = ?1`
     )
     .bind(id)
@@ -57,7 +57,7 @@ export async function PUT(
 
   const existingEventIdRow = await getRequestContext()
     .env.DB.prepare(
-      `SELECT e.id FROM events as e
+      `SELECT e.id FROM events AS e
         WHERE e.uid = ?1`
     )
     .bind(id)
@@ -65,7 +65,7 @@ export async function PUT(
 
   const existingTagIdRow = await getRequestContext()
     .env.DB.prepare(
-      `SELECT t.id FROM tags as t
+      `SELECT t.id FROM tags AS t
         WHERE t.name = ?1`
     )
     .bind(name)

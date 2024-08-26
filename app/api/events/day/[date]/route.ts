@@ -24,9 +24,9 @@ export async function GET(
 
   const { results } = await getRequestContext()
     .env.DB.prepare(
-      `SELECT e.*, t.name as tag_name FROM events as e 
-       LEFT JOIN event_tags as et ON e.id = et.event_id 
-       LEFT JOIN tags as t ON et.tag_id = t.id
+      `SELECT e.*, t.name AS tag_name FROM events AS e 
+       LEFT JOIN event_tags AS et ON e.id = et.event_id 
+       LEFT JOIN tags AS t ON et.tag_id = t.id
        WHERE e.date = ?1;`
     )
     .bind(epochTime)

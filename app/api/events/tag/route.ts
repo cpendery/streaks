@@ -31,7 +31,7 @@ export async function PUT(request: NextRequest) {
 
   const { results } = await getRequestContext()
     .env.DB.prepare(
-      "INSERT INTO tags (name) SELECT ?1 WHERE NOT EXISTS (SELECT * FROM tags as t WHERE t.name = ?1);"
+      "INSERT INTO tags (name) SELECT ?1 WHERE NOT EXISTS (SELECT * FROM tags AS t WHERE t.name = ?1);"
     )
     .bind(name)
     .all();

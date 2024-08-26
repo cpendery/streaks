@@ -14,7 +14,7 @@ import { AddEvent } from "@/components/add-event";
 import { useMonthOverview } from "@/hooks/api/useMonthOverview";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { apiMutation } from "@/lib/api";
-import { Loader2, ChartSpline } from "lucide-react";
+import { Loader2Icon, CalendarIcon, ChartSplineIcon } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TodoList } from "@/components/todo-list";
@@ -57,7 +57,7 @@ function Login() {
         />{" "}
         <Button className="ml-4" type="submit">
           {isPending ? (
-            <Loader2 className="h-4 w-4 mx-2 animate-spin" />
+            <Loader2Icon className="h-4 w-4 mx-2 animate-spin" />
           ) : (
             "Login"
           )}
@@ -85,6 +85,10 @@ function Calendar({
     },
     [invalidateMonthOverview]
   );
+
+  useEffect(() => {
+    onMonthChange(date);
+  }, [date, onMonthChange]);
 
   const t = new Date();
   const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
@@ -198,9 +202,8 @@ function Calendar({
 
 function Day() {
   const t = new Date();
-  const [date, setDate] = useState<Date>(
-    new Date(t.getFullYear(), t.getMonth(), t.getDate())
-  );
+  const today = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  const [date, setDate] = useState<Date>(today);
 
   return (
     <div className="flex flex w-full mt-4 flex-col md:flex-row">
@@ -222,14 +225,24 @@ function Day() {
         <div className="flex flex-col grow m-4">
           <div className="flex justify-between mx-4 items-center">
             <Streak />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-10"
-              onClick={() => toast("analysis coming soon!")}
-            >
-              <ChartSpline />
-            </Button>
+            <div className="flex">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10"
+                onClick={() => setDate(today)}
+              >
+                <CalendarIcon />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-10"
+                onClick={() => toast("analysis coming soon!")}
+              >
+                <ChartSplineIcon />
+              </Button>
+            </div>
           </div>
           <div className="flex justify-end m-4"></div>
           <TodoList date={date} />
@@ -270,7 +283,7 @@ export default function Home() {
         {authenticated === true && <Day />}
         {authenticated == null && (
           <div className="w-full h-full flex items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin" />
+            <Loader2Icon className="h-12 w-12 animate-spin" />
           </div>
         )}
       </div>

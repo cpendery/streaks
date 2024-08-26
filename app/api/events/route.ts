@@ -32,15 +32,18 @@ export async function PUT(request: NextRequest) {
     tags,
   }: EventsPutRequest = await request.json();
 
-  const { results: existingTags } = await getRequestContext()
-    .env.DB.prepare(
-      `SELECT * FROM tags as t WHERE t.name IN (${tags
-        .map((_, idx) => `?${idx + 1}`)
-        .join(", ")})`
-    )
-    .bind(...tags)
-    .all();
-  const tagIds = existingTags.map((row) => row.id);
+  let tagIds: string[] = [];
+  if (tags.length != 0) {
+    const { results: existingTags } = await getRequestContext()
+      .env.DB.prepare(
+        `SELECT * FROM tags AS t WHERE t.name IN (${tags
+          .map((_, idx) => `?${idx + 1}`)
+          .join(", ")})`
+      )
+      .bind(...tags)
+      .all();
+    tagIds = existingTags.map((row) => row.id) as string[];
+  }
 
   const eventDates = [];
   const startEpochDate = new Date(startDate).getTime();

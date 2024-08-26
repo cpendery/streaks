@@ -15,7 +15,7 @@ export async function POST(
   const { complete }: { complete: boolean } = await request.json();
 
   await getRequestContext()
-    .env.DB.prepare("UPDATE events as e SET complete = ?1 WHERE e.uid = ?2;")
+    .env.DB.prepare("UPDATE events AS e SET complete = ?1 WHERE e.uid = ?2;")
     .bind(complete ? 1 : 0, id)
     .run();
 
