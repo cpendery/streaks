@@ -14,10 +14,11 @@ import { AddEvent } from "@/components/add-event";
 import { useMonthOverview } from "@/hooks/api/useMonthOverview";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { apiMutation } from "@/lib/api";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChartSpline } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TodoList } from "@/components/todo-list";
+import { Streak } from "@/components/streak";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -104,10 +105,8 @@ function Calendar({
         overview[day]?.complete === overview[day]?.total &&
         overview[day] != null
     )
-    .map((day) => new Date(date.getFullYear(), date.getMonth(), parseInt(day)))
+    .map((day) => new Date(date.getFullYear(), month.getMonth(), parseInt(day)))
     .filter((day) => day.toDateString() != dateString);
-
-  console.log(completeDays, date);
 
   const incompleteDays = Object.keys(overview)
     .filter(
@@ -115,7 +114,9 @@ function Calendar({
         overview[day]?.complete !== overview[day]?.total &&
         overview[day] != null
     )
-    .map((day) => new Date(date.getFullYear(), date.getMonth(), parseInt(day)));
+    .map(
+      (day) => new Date(date.getFullYear(), month.getMonth(), parseInt(day))
+    );
 
   const failedDays = incompleteDays.filter(
     (day) => day < today && day.toDateString() != dateString
@@ -151,11 +152,11 @@ function Calendar({
             upcoming:
               "bg-info text-info-foreground hover:bg-info-accent hover:text-info-foreground font-extrabold",
             upcomingSelected:
-              "font-extrabold text-background bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
+              "font-extrabold text-background !bg-info-foreground hover:bg-info-foreground focus:bg-info-foreground",
             failed:
               "bg-error text-error-foreground hover:bg-error-accent hover:text-error-foreground font-extrabold",
             failedSelected:
-              "font-extrabold text-background bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
+              "font-extrabold text-background !bg-error-foreground hover:bg-error-foreground focus:bg-error-foreground",
           }}
           required
         />
@@ -204,7 +205,7 @@ function Day() {
   return (
     <div className="flex flex w-full mt-4 flex-col md:flex-row">
       <div className="flex flex-col space-y-4 m-4">
-        <AddEvent />
+        <AddEvent date={date} />
         <Suspense fallback={<Skeleton className="h-[360px] w-[360px]" />}>
           <Calendar date={date} setDate={setDate} />
         </Suspense>
@@ -219,6 +220,17 @@ function Day() {
         }
       >
         <div className="flex flex-col grow m-4">
+          <div className="flex justify-between mx-4 items-center">
+            <Streak />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-10"
+              onClick={() => toast("analysis coming soon!")}
+            >
+              <ChartSpline />
+            </Button>
+          </div>
           <div className="flex justify-end m-4"></div>
           <TodoList date={date} />
         </div>

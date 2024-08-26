@@ -34,7 +34,7 @@ import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOvervi
 import { apiAction } from "@/lib/api";
 import { Badge } from "@/components/ui/badge";
 
-const AddEvent = () => {
+const AddEvent = ({ date }: { date: Date }) => {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -54,7 +54,7 @@ const AddEvent = () => {
               ones!
             </DialogDescription>
           </DialogHeader>
-          <Form onSuccess={() => setOpen(false)} />
+          <Form onSuccess={() => setOpen(false)} date={date} />
         </DialogContent>
       </Dialog>
     );
@@ -74,7 +74,7 @@ const AddEvent = () => {
             Get started with a new habit or add new checkpoints to current ones!
           </DrawerDescription>
         </DrawerHeader>
-        <Form className="px-4" onSuccess={() => setOpen(false)} />
+        <Form className="px-4" onSuccess={() => setOpen(false)} date={date} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
@@ -124,13 +124,13 @@ const DayButton = ({
 function Form({
   className,
   onSuccess,
-}: React.ComponentProps<"form"> & { onSuccess: () => void }) {
-  const today = new Date();
-  const [startDate, setStartDate] = useState<Date>(today);
-  const [endDate, setEndDate] = useState<Date>(today);
+  date,
+}: React.ComponentProps<"form"> & { onSuccess: () => void; date: Date }) {
+  const [startDate, setStartDate] = useState<Date>(date);
+  const [endDate, setEndDate] = useState<Date>(date);
   const [name, setName] = useState("");
   const [repeat, setRepeat] = useState(false);
-  const [repeatDays, setRepeatDays] = useState([today.getDay()]);
+  const [repeatDays, setRepeatDays] = useState([date.getDay()]);
   const [loading, setLoading] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tag, setTag] = useState("");
@@ -219,7 +219,7 @@ function Form({
           value={tag}
           onChange={(e) => setTag(e.target.value)}
           onKeyDown={async (e) => {
-            if (e.key == "Enter") {
+            if (e.key == "Enter" || e.key == "Tab") {
               e.preventDefault();
               setTag("");
               if (!tags.includes(tag)) {

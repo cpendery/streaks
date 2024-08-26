@@ -28,17 +28,19 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --success: 143, 85%, 96%;
-    --success-foreground: 140, 100%, 27%;
-    --success-accent: 145, 92%, 91%;
+    --success: 143 85% 96%;
+    --success-foreground: 140 100% 27%;
+    --success-accent: 145 92% 91%;
 
-    --error: 359, 100%, 97%;
-    --error-accent: 359, 100%, 94%;
-    --error-foreground: 360, 100%, 45%;
+    --error: 359 100% 97%;
+    --error-accent: 359 100% 94%;
+    --error-foreground: 360 100% 45%;
 
-    --info: 208, 100%, 97%;
-    --info-accent: 221, 91%, 91%;
-    --info-foreground: 210, 92%, 45%;
+    --info: 208 100% 97%;
+    --info-accent: 221 91% 91%;
+    --info-foreground: 210 92% 45%;
+
+    --dim: 0 0% 37%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
@@ -71,6 +73,8 @@
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
+    --dim: 0 0% 37%;
 
     --success: 150, 86%, 65%;
 
