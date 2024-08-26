@@ -244,7 +244,10 @@ export default function Home() {
   const authenticated = useRecoilValue(authState);
 
   useEffect(() => {
+    var friendsPerSecond = 50;
+    var wait = false;
     window.addEventListener("mousemove", (e) => {
+      if (wait) return;
       const elem = document.createElement("img");
       elem.className = "cursor-friend";
       elem.style.top = `${e.clientY}px`;
@@ -254,9 +257,11 @@ export default function Home() {
       elem.width = 512;
       const cursorFriends = document.getElementById("cursor-friends");
       cursorFriends?.appendChild(elem);
+      wait = true;
       setTimeout(() => cursorFriends?.removeChild(elem), 2_500);
+      setTimeout(() => (wait = false), 1_000 / friendsPerSecond);
     });
-  });
+  }, []);
 
   return (
     <main className="flex justify-center min-h-screen">
