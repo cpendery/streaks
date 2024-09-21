@@ -14,7 +14,13 @@ import { AddEvent } from "@/components/add-event";
 import { useMonthOverview } from "@/hooks/api/useMonthOverview";
 import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOverview";
 import { apiMutation } from "@/lib/api";
-import { Loader2Icon, CalendarIcon, ChartSplineIcon } from "lucide-react";
+import {
+  Loader2Icon,
+  CalendarIcon,
+  ChartSplineIcon,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TodoList } from "@/components/todo-list";
@@ -22,6 +28,7 @@ import { Streak } from "@/components/streak";
 
 function Login() {
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const setAuth = useSetRecoilState(authState);
   const { mutate, isPending } = useMutation({
     mutationFn: async (password: string) => {
@@ -49,12 +56,31 @@ function Login() {
         mutate(password);
       }}
     >
-      <div className="flex sm:w-fit w-full justify-center sm:min-w-[50%] mx-4">
-        <Input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-        />{" "}
+      <div className="flex sm:w-fit w-full justify-center items-end sm:min-w-[50%] mx-4">
+        <div className="flex flex-col sm:min-w-[50%]">
+          <div className="flex w-full justify-end mb-1">
+            <button
+              type="button"
+              className="text-[#086fff] text-xs flex items-center"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? (
+                <>
+                  <EyeOff size={16} /> <span className="ml-0.5">Hide</span>
+                </>
+              ) : (
+                <>
+                  <Eye size={16} /> <span className="ml-0.5">Show</span>
+                </>
+              )}
+            </button>
+          </div>
+          <Input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type={showPassword ? "text" : "password"}
+          />{" "}
+        </div>
         <Button className="ml-4" type="submit">
           {isPending ? (
             <Loader2Icon className="h-4 w-4 mx-2 animate-spin" />

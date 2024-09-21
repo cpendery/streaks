@@ -10,6 +10,7 @@
     "pages:build": "npx @cloudflare/next-on-pages",
     "preview": "npm run pages:build && wrangler pages dev",
     "deploy": "npm run pages:build && wrangler pages deploy",
+    "deploy:db": "npx wrangler d1 execute streaks --file=./table.sql --remote",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts",
     "cf-db-restore": "npx wrangler d1 execute streaks --local --file=./table.sql"
   },
