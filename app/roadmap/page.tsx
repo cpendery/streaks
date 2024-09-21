@@ -30,6 +30,10 @@ export default function Roadmap() {
       <h1 className="mb-3 text-3xl underline underline-offset-2">Roadmap</h1>
       <div className="flex flex-col justify-center">
         <Item checked={true} text="add series delete support" />
+        <Item
+          checked={false}
+          text="add auth to all pages (including roadmap)"
+        />
         <Item checked={false} text="add streak rewards / road" />
         <Item checked={false} text="add total completed tasks reward path" />
         <Item checked={false} text="add total completed days reward path" />
