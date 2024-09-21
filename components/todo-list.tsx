@@ -12,7 +12,7 @@ export const TodoList = ({ date }: { date: Date }) => {
 
   useEffect(() => {
     if (todoData) {
-      setTodos(todoData);
+      setTodos(todoData.sort((a, b) => a.name.localeCompare(b.name)));
     }
     if (
       todoData.length > 0 &&
