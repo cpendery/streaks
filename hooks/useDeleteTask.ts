@@ -4,6 +4,7 @@ import { useInvalidateMonthOverview } from "@/hooks/api/useInvalidateMonthOvervi
 import { useInvalidateEvents } from "@/hooks/api/useInvalidateEvents";
 import { SetStateAction } from "react";
 import { Task } from "@/app/api/events/day/[date]/route";
+import { EventsDeleteRequest } from "@/app/api/events/[id]/route";
 
 export const useDeleteTask = (
   todo: Task,
@@ -15,9 +16,14 @@ export const useDeleteTask = (
 
   return async () => {
     setTodos((todos) => [...todos.filter((t) => t.uid != todo.uid)]);
+    const body: EventsDeleteRequest = {
+      sid: "",
+      mode: "this",
+    };
     const ok = await apiAction({
       route: `/api/events/${todo.uid}`,
       method: "DELETE",
+      body,
     });
     if (ok) {
       toast.success(`Successfully deleted event: ${todo.name}`);

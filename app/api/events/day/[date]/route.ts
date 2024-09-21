@@ -9,6 +9,7 @@ export type Task = {
   tags: string[];
   name: string;
   uid: string;
+  sid: string;
 };
 
 export async function GET(
@@ -39,6 +40,7 @@ export async function GET(
     } else {
       acc.set(row.uid, {
         uid: row.uid,
+        sid: row.sid,
         name: row.name,
         complete: !!row.complete,
         date: new Date(row.date as number).toISOString(),

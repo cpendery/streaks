@@ -8,11 +8,11 @@ CREATE TABLE IF NOT EXISTS events (
     date INTEGER
 );
 
-INSERT INTO events (uid, sid, name, complete, date) VALUES ('875fbbc7-2f7d-4008-a9b5-87741fae4776', '65108554-727e-4221-a47e-9abbc9239a74', 'Event 1', 0, 1724457600000);
+INSERT INTO events (uid, sid, name, complete, date) VALUES ('875fbbc7-2f7d-4008-a9b5-87741fae4776', '', 'Event 1', 0, 1724457600000);
 INSERT INTO events (uid, sid, name, complete, date) VALUES ('975fbbc7-2f7d-4008-a9b5-87741fae4776', '95108554-727e-4221-a47e-9abbc9239a74', 'Event 2', 0, 1724544000000);
 INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4775', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 3', 1, 1717718400000);
 INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4776', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 3', 1, 1717632000000);
-INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4776', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 3', 1, 1717545600000);
+INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4779', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 3', 1, 1717545600000);
 INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4777', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 4', 1, 1717718400000);
 INSERT INTO events (uid, sid, name, complete, date) VALUES ('175fbbc7-2f7d-4008-a9b5-87741fae4778', '15108554-727e-4221-a47e-9abbc9239a74', 'Event 5', 1, 1717718400000);
 

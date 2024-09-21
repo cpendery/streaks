@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
     }
   }
 
-  const seriesId = crypto.randomUUID();
+  const seriesId = repeat ? crypto.randomUUID() : "";
   let eventIds: string[] = [];
   if (repeat && eventDates.length != 0) {
     const batchResults = await getRequestContext().env.DB.batch(
