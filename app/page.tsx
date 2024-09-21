@@ -21,6 +21,7 @@ import {
   Eye,
   EyeOff,
   NotepadTextIcon,
+  MapIcon,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -32,6 +33,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
+import { useCursorFriends } from "@/hooks/useCursorFriends";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -310,6 +313,21 @@ function Day() {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/roadmap"
+                      className="w-10 inline-flex items-center justify-center"
+                    >
+                      <MapIcon />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Roadmap</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           <div className="flex justify-end m-4"></div>
@@ -324,25 +342,7 @@ export default function Home() {
   useAuth();
   const authenticated = useRecoilValue(authState);
 
-  useEffect(() => {
-    var friendsPerSecond = 50;
-    var wait = false;
-    window.addEventListener("mousemove", (e) => {
-      if (wait) return;
-      const elem = document.createElement("img");
-      elem.className = "cursor-friend";
-      elem.style.top = `${e.clientY}px`;
-      elem.style.left = `${e.clientX}px`;
-      elem.src = "/friend.png";
-      elem.height = 512;
-      elem.width = 512;
-      const cursorFriends = document.getElementById("cursor-friends");
-      cursorFriends?.appendChild(elem);
-      wait = true;
-      setTimeout(() => cursorFriends?.removeChild(elem), 2_500);
-      setTimeout(() => (wait = false), 1_000 / friendsPerSecond);
-    });
-  }, []);
+  useCursorFriends();
 
   return (
     <main className="flex justify-center min-h-screen">
