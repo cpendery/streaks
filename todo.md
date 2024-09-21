@@ -7,18 +7,25 @@
 - [x] fix layout on login
 - [x] fix mobile padding issue were sonner's cover the bottom task item (closeable or padding, whichever looks better)
 - [x] on mobile, use date picker instead of full calendar view
-- [ ] adding tagging support
+- [x] adding tagging support
+
+- [x] add series delete support
+- [ ] add bullet journal view
+- [ ] add streak rewards / road
+- have three roads: a road for streak length, a road for complete days, and a road for total tasks
+
+---
+
 - [ ] allow filtering based on certain tags
 - [ ] add edit ability
-    - [ ] allow creating new tags in edit ability
+- [ ] allow creating new tags in edit ability
 
 - [ ] restyle website like lisa says gah
-    - [ ] cursor tracking animation
-    - [ ] cute loading animations
-    - [ ] cute color scheme
-    - [ ] cute favicon
-    - [ ] 
 
+  - [ ] cursor tracking animation
+  - [ ] cute loading animations
+  - [ ] cute color scheme
+  - [ ] cute favicon
 
 - [ ] build rewards system
 - [ ] build reporting system

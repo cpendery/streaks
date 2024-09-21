@@ -20,11 +20,18 @@ import {
   ChartSplineIcon,
   Eye,
   EyeOff,
+  NotepadTextIcon,
 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TodoList } from "@/components/todo-list";
 import { Streak } from "@/components/streak";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function Login() {
   const [password, setPassword] = useState("");
@@ -252,22 +259,57 @@ function Day() {
           <div className="flex justify-between mx-4 items-center">
             <Streak />
             <div className="flex">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-10"
-                onClick={() => setDate(today)}
-              >
-                <CalendarIcon />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-10"
-                onClick={() => toast("analysis coming soon!")}
-              >
-                <ChartSplineIcon />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-10"
+                      onClick={() => toast("bullet journal coming soon!")}
+                    >
+                      <NotepadTextIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Bullet journal view</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-10"
+                      onClick={() => setDate(today)}
+                    >
+                      <CalendarIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>View today</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="w-10"
+                      onClick={() => toast("analysis coming soon!")}
+                    >
+                      <ChartSplineIcon />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Analysis</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           <div className="flex justify-end m-4"></div>
