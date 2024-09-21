@@ -27,6 +27,7 @@ export default function Roadmap() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="mb-3 text-3xl underline underline-offset-2">Roadmap</h1>
       <div className="flex flex-col justify-center">
         <Item checked={true} text="add series delete support" />
         <Item checked={false} text="add streak rewards / road" />
