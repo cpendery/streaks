@@ -30,6 +30,8 @@ export default function Roadmap() {
       <h1 className="mb-3 text-3xl underline underline-offset-2">Roadmap</h1>
       <div className="flex flex-col justify-center">
         <Item checked={true} text="add series delete support" />
+        <Item checked={true} text="fix weird zoom issue" />
+        <Item checked={true} text="add completed section" />
         <Item
           checked={false}
           text="add auth to all pages (including roadmap)"
