@@ -75,6 +75,10 @@ const config = {
           DEFAULT: "hsl(var(--dim))",
           foreground: "hsl(var(--dim))",
         },
+        faint: {
+          DEFAULT: "rgba(var(--faint))",
+          foreground: "rgba(var(--faint))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -83,12 +87,20 @@ const config = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {

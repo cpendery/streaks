@@ -4,9 +4,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { SetStateAction, useState } from "react";
 import { useCheckTask } from "@/hooks/useCheckTask";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { DeleteEvent } from "./delete-event";
+import { cn } from "@/lib/utils";
 
 export const TodoItem = ({
   todo,
@@ -32,11 +33,19 @@ export const TodoItem = ({
   return (
     <div
       key={todo.uid}
-      className="flex min-h-12 rounded border items-center justify-between"
+      className={cn(
+        "flex min-h-12 rounded border items-center justify-between",
+        todo.complete ? "bg-muted text-faint" : ""
+      )}
     >
       <div className="flex items-center ml-2">
         <Checkbox
-          className="ml-2"
+          className={cn(
+            "ml-2",
+            todo.complete
+              ? "data-[state=checked]:bg-faint data-[state=checked]:border-transparent data-[state=checked]:hover:bg-primary"
+              : ""
+          )}
           checked={todo.complete}
           onClick={checkTask}
         />
