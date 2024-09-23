@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@raddix/use-media-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,7 +98,7 @@ function Form({
 
   return (
     <form
-      className="grid items-start gap-4"
+      className={cn("grid items-start gap-4", className)}
       onSubmit={async (e) => {
         e.preventDefault();
         setLoading(true);
